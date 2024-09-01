@@ -5,6 +5,9 @@ import requests
 def get_title_string(title):
     return title["english"] or title["romaji"] or title["native"]
 
+def hyperlink(text, link):
+    return f"\033]8;;{link}\033\\{text}\033]8;;\033\\"
+
 
 parser = ArgumentParser(
     "anilist_unwatched",
@@ -37,11 +40,11 @@ for media in medias:
 
         if relation_type == "SEQUEL" or (args.side_stories and relation_type == "SIDE_STORY"):
             if all(m["id"] != node["id"] for m in medias) and node["status"] == "FINISHED":
-                unwatched.append(get_title_string(node["title"]))
+                unwatched.append(hyperlink(get_title_string(node["title"]), node["siteUrl"]))
 
     for i, title in enumerate(unwatched):
         if i == 0:
-            print(get_title_string(media["title"]))
+            print(hyperlink(get_title_string(media["title"]), media["siteUrl"]))
 
         if i == len(unwatched) - 1:
             print(f"╰ {title}", end="\n\n")

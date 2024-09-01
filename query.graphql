@@ -5,6 +5,7 @@ fragment mediaInfo on Media {
     romaji
     native
   }
+  siteUrl
 }
 
 query($username: String) {
