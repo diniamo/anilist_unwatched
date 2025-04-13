@@ -29,24 +29,21 @@ medias = list(
         response["data"]["MediaListCollection"]["lists"][0]["entries"],
     )
 )
+ids = set(media["id"] for media in medias)
 
 for media in medias:
     unwatched = []
 
     relations = media["relations"]
-
     for edge, node in zip(relations["edges"], relations["nodes"]):
         relation_type = edge["relationType"]
 
         if relation_type == "SEQUEL" or (args.side_stories and relation_type == "SIDE_STORY"):
-            if all(m["id"] != node["id"] for m in medias) and node["status"] == "FINISHED":
+            if node["id"] not in ids and node["status"] == "FINISHED":
                 unwatched.append(hyperlink(get_title_string(node["title"]), node["siteUrl"]))
 
-    for i, title in enumerate(unwatched):
-        if i == 0:
-            print(hyperlink(get_title_string(media["title"]), media["siteUrl"]))
-
-        if i == len(unwatched) - 1:
-            print(f"╰ {title}", end="\n\n")
-        else:
-            print(f"├ {title}")
+    if len(unwatched) > 0:
+        print(hyperlink(get_title_string(media["title"]), media["siteUrl"]))
+        for i in range(1, len(unwatched) - 1):
+            print(f"├ {unwatched[i]}")
+        print(f"╰ {unwatched[-1]}", end="\n\n")
